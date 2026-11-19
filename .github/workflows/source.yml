@@ -3,15 +3,19 @@ on:
   workflow_dispatch:
     inputs:
       message:
-        description: Message to send to the target repo
+        description: Message to send to the target workflow
         default: hello from source
 jobs:
-  dispatch:
+  build:
+    uses: yokeTH/dispatch-poc-target/.github/workflows/target.yml@main
+    secrets: inherit
+    with:
+      message: ${{ inputs.message }}
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - env:
-          GH_TOKEN: ${{ secrets.TARGET_DISPATCH_TOKEN }}
-        run: |
-          gh workflow run target.yml -R yokeTH/dispatch-poc-target \
-            -f message="${{ inputs.message }}" \
-            -f source_run="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - run: |
+          echo "mock deploy: ${{ needs.build.outputs.artifact }}"
+          sleep 5
+          echo "deployed"
