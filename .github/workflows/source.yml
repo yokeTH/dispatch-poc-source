@@ -1,0 +1,17 @@
+name: source
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: Message to send to the target repo
+        default: hello from source
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.TARGET_DISPATCH_TOKEN }}
+        run: |
+          gh workflow run target.yml -R yokeTH/dispatch-poc-target \
+            -f message="${{ inputs.message }}" \
+            -f source_run="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
