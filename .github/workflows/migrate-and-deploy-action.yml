@@ -1,0 +1,23 @@
+name: migrate-and-deploy-action
+on: workflow_dispatch
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benc-uk/workflow-dispatch@d004979be141727c7a17c28f603e2facc40d0855 # v1.3.3
+        with:
+          workflow: migrate.yml
+          repo: yokeTH/dispatch-poc-target
+          ref: main
+          token: ${{ secrets.TARGET_READ_TOKEN }}
+          wait-for-completion: true
+          sync-status: true
+          wait-timeout-seconds: 1800
+  deploy:
+    needs: migrate
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "mock deploy after migration"
+          sleep 5
+          echo "deployed"
