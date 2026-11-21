@@ -6,20 +6,11 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.TARGET_DISPATCH_TOKEN }}
       REPO: yokeTH/dispatch-poc-target
-      ID: ${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - run: |
-          gh workflow run migrate.yml -R "$REPO" -f id="$ID"
-          # find the dispatched run by its run-name, which carries our id
-          for i in $(seq 30); do
-            run=$(gh run list -R "$REPO" -w migrate.yml -e workflow_dispatch -L 20 --json databaseId,displayTitle \
-              -q ".[] | select(.displayTitle == \"migrate $ID\") | .databaseId")
-            [ -n "$run" ] && break
-            sleep 2
-          done
-          [ -n "$run" ] || { echo "migration run not found"; exit 1; }
-          echo "migration run: https://github.com/$REPO/actions/runs/$run"
-          gh run watch "$run" -R "$REPO" --exit-status
+          url=$(gh workflow run migrate.yml -R "$REPO")
+          echo "migration run: $url"
+          gh run watch "${url##*/}" -R "$REPO" --exit-status
   deploy:
     needs: migrate
     runs-on: ubuntu-latest
