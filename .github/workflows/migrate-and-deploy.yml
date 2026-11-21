@@ -4,7 +4,7 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.TARGET_DISPATCH_TOKEN }}
+      GH_TOKEN: ${{ secrets.TARGET_READ_TOKEN }}
       REPO: yokeTH/dispatch-poc-target
     steps:
       - run: |
